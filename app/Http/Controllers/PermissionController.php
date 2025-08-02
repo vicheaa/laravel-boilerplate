@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Helpers\ApiResponse;
+use App\Http\Requests\StorePermissionRequest;
 use App\Models\Permission;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,7 +16,7 @@ class PermissionController extends Controller
     /**
      * Get all permissions with their relationships.
      */
-    public function index(Request $request): JsonResponse
+    public function index(): JsonResponse
     {
         try {
             $permissions = Permission::with(['parent', 'children', 'roles'])->get();
@@ -43,19 +44,20 @@ class PermissionController extends Controller
     /**
      * Create a new permission.
      */
-    public function store(Request $request): JsonResponse
+    public function store(StorePermissionRequest $request): JsonResponse
     {
         try {
-            $validated = $request->validate([
-                'name' => 'required|string|max:121|unique:permissions,name',
-                'display_name' => 'required|string|max:121',
-                'display_name_kh' => 'required|string|max:121',
-                'action' => 'required|string|max:121',
-                'subject' => 'required|string|max:121',
-                'description' => 'nullable|string',
-                'description_kh' => 'nullable|string',
-                'parent_id' => 'nullable|exists:permissions,id',
-            ]);
+            // $validated = $request->validate([
+            //     'name' => 'required|string|max:121|unique:permissions,name',
+            //     'display_name' => 'required|string|max:121',
+            //     'display_name_kh' => 'required|string|max:121',
+            //     'action' => 'required|string|max:121',
+            //     'subject' => 'required|string|max:121',
+            //     'description' => 'nullable|string',
+            //     'description_kh' => 'nullable|string',
+            //     'parent_id' => 'nullable|exists:permissions,id',
+            // ]);
+            $validated = $request->validated();
 
             $permission = Permission::create($validated);
             $permission->load(['parent', 'children']);

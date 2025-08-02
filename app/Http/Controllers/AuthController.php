@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Helpers\ApiResponse;
-use App\Http\Requests\LoginRequest;
 use App\Http\Requests\StoreUserRequest;
 use App\Models\Role;
 use App\Models\User;
@@ -28,9 +27,9 @@ class AuthController extends Controller
             $token = $user->createToken('auth-token')->plainTextToken;
 
             return response()->json([
-                'user' => $user,
-                'token' => $token,
-                'token_type' => 'Bearer',
+                'user'          => $user,
+                'token'         => $token,
+                'token_type'    => 'Bearer',
             ]);
         } catch (\Exception $e) {
             Log::error('Signup failed: ' . $e->getMessage()); // Log the actual error
@@ -94,9 +93,9 @@ class AuthController extends Controller
         $token = $user->createToken('auth-token')->plainTextToken;
 
         return response()->json([
-            'user' => $user,
-            'token' => $token,
-            'token_type' => 'Bearer',
+            'user'          => $user,
+            'token'         => $token,
+            'token_type'    => 'Bearer',
         ]);
     }
 
@@ -189,8 +188,8 @@ class AuthController extends Controller
     public function getUserPermissions(Request $request): JsonResponse
     {
         try {
-            $user = $request->user();
-            $permissions = $user->getPermissions();
+            $user           = $request->user();
+            $permissions    = $user->getPermissions();
 
             return ApiResponse::success($permissions);
         } catch (\Exception $e) {

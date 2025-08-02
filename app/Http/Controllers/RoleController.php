@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Helpers\ApiResponse;
+use App\Http\Requests\StoreRoleRequest;
 use App\Models\Role;
 use App\Models\Permission;
 use Illuminate\Http\JsonResponse;
@@ -44,24 +45,18 @@ class RoleController extends Controller
     /**
      * Create a new role.
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreRoleRequest $request): JsonResponse
     {
         try {
-            $validated = $request->validate([
-                'name' => 'required|string|max:121|unique:roles,name',
-                'display_name' => 'required|string|max:121',
-                'display_name_kh' => 'required|string|max:121',
-                'restricted' => 'boolean',
-                'permission_ids' => 'array',
-                'permission_ids.*' => 'exists:permissions,id',
-            ]);
+
+            $validated = $request->validated();
 
             $role = DB::transaction(function () use ($validated) {
                 $role = Role::create([
-                    'name' => $validated['name'],
-                    'display_name' => $validated['display_name'],
-                    'display_name_kh' => $validated['display_name_kh'],
-                    'restricted' => $validated['restricted'] ?? false,
+                    'name'              => $validated['name'],
+                    'display_name'      => $validated['display_name'],
+                    'display_name_kh'   => $validated['display_name_kh'],
+                    'restricted'        => $validated['restricted'] ?? false,
                 ]);
 
                 if (isset($validated['permission_ids'])) {
