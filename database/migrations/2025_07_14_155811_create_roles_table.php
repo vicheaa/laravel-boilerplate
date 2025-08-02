@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('display_name', 121);
             $table->string('display_name_kh');
             $table->boolean('restricted')->default(false);
+            $table->timestamps();
         });
     }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class StoreUserRequest extends FormRequest
 {
@@ -11,7 +12,8 @@ class StoreUserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        // Check if the authenticated user has admin role
+        return Auth::check() && Auth::user()->hasRole('admin');
     }
 
     /**
@@ -22,9 +24,36 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'          => 'required|string',
-            'email'         => 'required|string|unique:users,email',
-            'password'      => 'required|string|min:6|confirmed',
+            'name'          => 'required|string|max:255',
+            'email'         => 'required|email|unique:users,email',
+            'password'      => 'required|string|min:6',
+            'role_id'       => 'nullable|exists:roles,id',
         ];
+    }
+
+    /**
+     * Get custom error messages for the request.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'name.required'     => 'The name field is required.',
+            'email.required'    => 'The email field is required.',
+            'email.email'       => 'Please provide a valid email address.',
+            'email.unique'      => 'This email address is already registered.',
+            'password.required' => 'The password field is required.',
+            'password.min'      => 'The password must be at least 6 characters.',
+            'role_id.exists'    => 'The selected role is invalid.',
+        ];
+    }
+
+    /**
+     * Handle a failed authorization attempt.
+     */
+    protected function failedAuthorization(): void
+    {
+        abort(403, 'You must have admin role to create users.');
     }
 }

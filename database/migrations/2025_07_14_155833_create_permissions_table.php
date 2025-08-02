@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('description_kh')->nullable();
             $table->foreignId('parent_id')->nullable();
             $table->foreign('parent_id')->references('id')->on('permissions')->onDelete('set null');
+            $table->timestamps();
         });
 
         Schema::create('permission_role', function (Blueprint $table) {
